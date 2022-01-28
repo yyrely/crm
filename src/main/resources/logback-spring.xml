@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration scan="true" scanPeriod="60 seconds">
+    <!-- log name -->
+    <property name="SAVE_NAME" value="crm"/>
+
+    <property name="CONSOLE_LOG_PATTERN"
+              value="${CONSOLE_LOG_PATTERN:-%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) [%32.32X{traceId:-unknown}] %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"/>
+    <!-- 彩色日志依赖的渲染类 -->
+    <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter"/>
+    <conversionRule conversionWord="wex" converterClass="org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter"/>
+    <conversionRule conversionWord="wEx" converterClass="org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter"/>
+
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 系统服务日志 -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/${SAVE_NAME}.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- daily rollover -->
+            <fileNamePattern>${LOG_PATH}/backup/${SAVE_NAME}_%d{yyyyMMdd}.%i.log</fileNamePattern>
+
+            <!-- keep 30 days' worth of history -->
+            <!--<maxHistory>30</maxHistory>-->
+            <!-- 日志文件总容量 -->
+            <!--<totalSizeCap>3GB</totalSizeCap>-->
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%date %level [%thread] [traceId:%X{traceId:-unknown}] [spanId:%X{spanId:-0}] [depth:%X{depth:-0}] [user: %X{userName:-unknown} %X{userId:-unknown}] %logger{55} - %msg%ex%n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="info">
+        <springProfile name="!prod">
+            <appender-ref ref="console"/>
+        </springProfile>
+        <appender-ref ref="FILE"/>
+    </root>
+
+</configuration>

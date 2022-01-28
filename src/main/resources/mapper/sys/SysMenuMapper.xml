@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chuncongcong.crm.mapper.sys.SysMenuMapper">
+
+	<select id="findMenuByRoleIds" resultType="com.chuncongcong.crm.model.dto.sys.SysMenuDto">
+		SELECT
+		sys_menu.*
+		FROM
+		sys_menu
+		LEFT JOIN sys_role_menu ON sys_menu.id = sys_role_menu.menu_id
+		WHERE
+		sys_role_menu.role_id in
+		<foreach collection="roles" open="(" separator="," close=")" item="roleId">
+			#{roleId}
+		</foreach>
+		order by sys_menu.parent_id, sys_menu.sort
+	</select>
+	<select id="selectByParentId" resultType="com.chuncongcong.crm.model.dto.sys.SysMenuDto">
+		SELECT
+			*
+		FROM
+		sys_menu
+		<where>
+			<if test="parentId != null">
+				and parent_id = #{parentId}
+			</if>
+		</where>
+		order by parent_id, sort
+	</select>
+</mapper>

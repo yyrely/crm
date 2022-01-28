@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chuncongcong.crm.mapper.sys.SysUserMapper">
+
+	<resultMap id="baseResultMap" type="com.chuncongcong.crm.model.vo.sys.SysUserVo">
+		<id column="id" property="id"/>
+		<result column="username" property="username"/>
+		<result column="password" property="password"/>
+		<result column="mobile" property="mobile"/>
+		<result column="dept_id" property="deptId"/>
+		<collection property="roles" ofType="com.chuncongcong.crm.model.vo.sys.SysRoleVo">
+			<id column="role_id" property="id"/>
+			<result column="role_name" property="roleName"/>
+		</collection>
+	</resultMap>
+
+	<select id="pageUser" resultMap="baseResultMap">
+		select
+		    t1.id,
+		    t1.username,
+		    t1.mobile,
+		    t1.dept_id,
+		    t3.id as role_id,
+		    t3.role_name
+		from sys_user t1
+		left join sys_user_role t2 on t1.id = t2.user_id
+		left join sys_role t3 on t2.role_id = t3.id
+		<where>
+			<if test="userQuery.username != null and userQuery.username != ''">
+				and t1.username like "%"#{userQuery.username}"%"
+			</if>
+			<if test="userQuery.mobile != null and userQuery.mobile != ''">
+				and t1.mobile like "%"#{userQuery.mobile}"%"
+			</if>
+			<if test="userQuery.roleId != null">
+				and t3.id = userQuery.roleId
+			</if>
+			<if test="deptIds != null and deptIds.size() != 0">
+				and t1.dept_id in
+				<foreach collection="deptIds" item="deptId" open="(" separator="," close=")" index="index">
+					#{deptId}
+				</foreach>
+			</if>
+		</where>
+	</select>
+</mapper>

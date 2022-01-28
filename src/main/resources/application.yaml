@@ -1,0 +1,37 @@
+server:
+  port: 8060
+
+spring:
+  mvc:
+    servlet:
+      load-on-startup: 1
+    throw-exception-if-no-handler-found: true
+  resources:
+    add-mappings: false
+  aop:
+    proxy-target-class: true
+  main:
+    lazy-initialization: false
+  http:
+    encoding:
+      enabled: true
+      force: true
+      charset: utf-8
+
+mybatis-plus:
+  global-config:
+    db-config:
+      logic-delete-field: isDel
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+logging:
+  file:
+    path: /data/logs/crm
+  config: classpath:logback-spring.xml
+
+request:
+  log:
+    enable: true
